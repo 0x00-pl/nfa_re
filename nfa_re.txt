@@ -1,0 +1,68 @@
+
+可接受的表达式: 
+ 最小集: .()|*\
+ [TODO:]可转换扩展集: ?+{,}
+ /a?/  ==>  "a" -> '?'
+ /a+/  ==>  /aa*/
+ /a{2,4}/ ==>
+ "a" "a" "a" "a" '{2,4}'
+           \-->\--->/
+ 
+基础函数:
+ state run_step(state, next_tab_pair, ch, is_forward)
+ @next_tab_pair 包含正逆两个next_tab
+ @ptext 包含p和text
+ @terminate_state 当包含terminate_state (aka. state & terminate_state == terminate_state) 的时候停止
+ run_until_state(start_state_io, terminate_state, next_tab_pair, ptext_io, is_forward)
+ run_until_ptext(start_state_io, next_tab_pair, ptext, ptext_dest, is_forward)
+ 
+
+ find_capture(capture_id, next_tab_pair, ptext){
+   找到捕获的开头,然后用捕获开头的状态继续找捕获结束.
+   但是这不一定是第一个捕获.
+   也可以先找捕获结尾, 然后逆向找到开头.
+   获取捕获了还要验证剩下的一段是否完全匹配.
+   如果不匹配就继续获取相应的开头或结尾.
+   最后,要注意字符串边界和死循环.
+ }
+
+分析字符项和控制项:
+ a(bb|ccc)dddd*.
+ +-++-+++-++++-+
+
+构造nfa图(和逆图):
+ /(a)/
+ '(' -> "a"  ')' ->
+
+
+ /a*/
+   /<-\   
+ "a"  '*' ->
+   \->/
+   
+ /(a)*/
+   /<--------------\
+ '(' -> "a" ')' -> '*' ->
+   \-------------->/
+
+ /(a|b)/
+              /---->\
+ '(' -> "a" '|' "b" ')' ->
+   \----------->/
+
+ /(a|b)*/
+   /<----------------------\
+              /---->\
+ '(' -> "a" '|' "b" ')' -> '*' ->
+   \----------->/
+   \---------------------->/
+
+构造无字符状态转换表(正和逆):
+  对每个字符位置+1遍历图可到达的位置, 记录 next_tab[char_at+1]= {&next1, &next2} .
+
+构造输入匹配表:
+ 对每个可能的text字符ch 
+  match_tab[ch]= { i for in 每个字符项patt[i] if patt[i].match(ch) }
+ 
+
+
