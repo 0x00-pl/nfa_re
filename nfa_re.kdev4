@@ -1,0 +1,4 @@
+[Project]
+Name=nfa_re
+Manager=KDevCMakeManager
+VersionControl=kdevgit
